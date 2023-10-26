@@ -1,15 +1,30 @@
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
+import { Link, routeLoader$ } from "@builder.io/qwik-city";
+
+export const useTodos = routeLoader$(async () => {
+  const response = await fetch("https://jsonplaceholder.typicode.com/todos", {
+    headers: { Accept: "application/json" },
+  });
+  return (await response.json()) as {
+    userId: number;
+    id: number;
+    title: string;
+    completed: boolean;
+  }[];
+});
 
 export default component$(() => {
+  const todos = useTodos();
   return (
     <>
-      <h1>Hi 👋</h1>
-      <p>
-        Can't wait to see what you build with qwik!
-        <br />
-        Happy coding.
-      </p>
+      <h1>Todos</h1>
+      <Link href="/post">Post Todo</Link>
+      <ul>
+        {todos.value.map((todo) => (
+          <li key={todo.id}>{todo.title}</li>
+        ))}
+      </ul>
     </>
   );
 });
